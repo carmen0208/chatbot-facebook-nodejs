@@ -1,16 +1,16 @@
 {
-  "name": "hero",
+  "name": "Caesar",
   "version": "1.0.0",
-  "description": "",
+  "description": "Carmen's private asistant, Caeser",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@github.com:carmen0208/chatbot-facebook-nodejs.git"
   },
-  "author": "",
+  "author": "Carmen Liu",
   "license": "ISC",
   "dependencies": {
     "apiai": "^2.0.5",
