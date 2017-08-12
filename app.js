@@ -184,6 +184,21 @@ function handleEcho(messageId, appId, metadata) {
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 	switch (action) {
+		case "detailed-application":
+			if (isDefinded(contexts[0]) && contexts[0].name == 'job_application' && context[0].parameters) {
+				let phone_number = (isDefinded(contexts[0].parameters['phone-number'])
+				&& contexts[0].parameters['phone-number']!='') ? contexts[0].parameters['phone-number']:'';
+				let user_name = (isDefinded(contexts[0].parameters['user-name'])
+				&& contexts[0].parameters['user-name']!='') ? contexts[0].parameters['user-name']:'';
+				let previous_job = (isDefinded(contexts[0].parameters['previous-job'])
+				&& contexts[0].parameters['previous-job']!='') ? contexts[0].parameters['previous-job']:'';
+				let year_of_experience = (isDefinded(contexts[0].parameters['year-of-experience'])
+				&& contexts[0].parameters['year-of-experience']!='') ? contexts[0].parameters['year-of-experience']:'';
+				let job_vacancy = (isDefinded(contexts[0].parameters['job-vacancy'])
+				&& contexts[0].parameters['job-vacancy']!='') ? contexts[0].parameters['job-vacancy']:'';	
+			}
+			sendTextMessage(sender, responseText);
+			break;
 		default:
 			//unhandled action, just send back the text
 			sendTextMessage(sender, responseText);
