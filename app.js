@@ -9,6 +9,7 @@ const request = require('request');
 const pg = require('pg');
 const app = express();
 const uuid = require('uuid');
+const userData = require('./user');
 
 pg.defaults.ssl = true;
 // Messenger API parameters
@@ -68,6 +69,7 @@ const apiAiService = apiai(config.API_AI_CLIENT_ACCESS_TOKEN, {
 	requestSource: "fb"
 });
 const sessionIds = new Map();
+const usersMap = new Map();
 
 // Index route
 app.get('/', function (req, res) {
@@ -133,7 +135,17 @@ app.post('/webhook/', function (req, res) {
 });
 
 
+function setSessionAndUser(senderID) {
+	if (!sessionIds.has(senderID)) {
+		sessionIds.set(senderID, uuid.v1());
+	}
 
+	if( !usersMap.has(senderID)) {
+		userData(function(user) {
+			usersMap.set(senderID, user);
+		}, senderID);
+	}
+}
 
 
 function receivedMessage(event) {
@@ -143,9 +155,7 @@ function receivedMessage(event) {
 	var timeOfMessage = event.timestamp;
 	var message = event.message;
 
-	if (!sessionIds.has(senderID)) {
-		sessionIds.set(senderID, uuid.v1());
-	}
+	setSessionAndUser(senderID);
 	//console.log("Received message for user %d and page %d at %d with message:", senderID, recipientID, timeOfMessage);
 	//console.log(JSON.stringify(message));
 
@@ -755,60 +765,10 @@ function sendAccountLinking(recipientId) {
 
 
 function greetUserText(userId) {
-	//first read user firstname
-	request({
-		uri: 'https://graph.facebook.com/v2.7/' + userId,
-		qs: {
-			access_token: config.FB_PAGE_TOKEN
-		}
-
-	}, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-
-			var user = JSON.parse(body);
-
-			if (user.first_name) {
-				console.log("FB user: %s %s, %s",
-					user.first_name, user.last_name, user.gender);
-
-				sendTextMessage(userId, "Welcome " + user.first_name + '!' +
-				'I can answer frequently asked question for you ' +
-				'and I perform job interviews, what can I help you with?');
-				pg.connect(process.env.DATABASE_URL, function(err, client) {
-					if(err) throw err;
-					console.log('connect to postgres, Searching for a user...');
-					let rows = [];
-					client.query(`SELECT id FROM users WHERE fb_id = '$userId' LIMIT 1`)
-					.on('row', function(row){
-						rows.push(row);
-					})
-					.on('end', () => {
-						if(rows.length === 0) {
-							let sql = 'INSERT INTO users (fd_id, first_name, last_name, picture, locale, timezone, gender' + 
-							'VALUES ($1, $2, $3, $4, $5, $6, $7)';
-
-							client.query(sql, [
-								userId,
-								user.first_name,
-								user.last_name,
-								user.picture,
-								user.locale,
-								user.timezone,
-								user.gender
-							])
-						}
-					})
-
-				})
-			} else {
-				console.log("Cannot get data for fb user with id",
-					userId);
-			}
-		} else {
-			console.error(response.error);
-		}
-
-	});
+	let user = usersMap.get(userId);
+	sendTextMessage(userId, "Welcome" + user.first_name + '!' +
+'I can answer frequently asked questions for you ' +
+'and I perform job interviews, what can i do for you?');
 }
 
 /*
@@ -857,6 +817,7 @@ function receivedPostback(event) {
 	var recipientID = event.recipient.id;
 	var timeOfPostback = event.timestamp;
 
+	setSessionAndUser(senderID);
 	// The 'payload' param is a developer-defined field which is set in a postback 
 	// button for Structured Messages. 
 	var payload = event.postback.payload;
