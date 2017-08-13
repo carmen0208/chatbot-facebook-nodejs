@@ -793,8 +793,8 @@ function greetUserText(userId) {
 								user.last_name,
 								user.picture,
 								user.locale,
-								user.timezone
-								user.gender,
+								user.timezone,
+								user.gender
 							])
 						}
 					})
