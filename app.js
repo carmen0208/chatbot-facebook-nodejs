@@ -213,16 +213,16 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 			sendQuickReply(sender, responseText, replies);
 			break;
 		case "detailed-application":
-			if (isDefinded(contexts[0]) && contexts[0].name == 'job_application' && context[0].parameters) {
-				let phone_number = (isDefinded(contexts[0].parameters['phone-number'])
+			if (isDefined(contexts[0]) && contexts[0].name == 'job_application' && context[0].parameters) {
+				let phone_number = (isDefined(contexts[0].parameters['phone-number'])
 				&& contexts[0].parameters['phone-number']!='') ? contexts[0].parameters['phone-number']:'';
-				let user_name = (isDefinded(contexts[0].parameters['user-name'])
+				let user_name = (isDefined(contexts[0].parameters['user-name'])
 				&& contexts[0].parameters['user-name']!='') ? contexts[0].parameters['user-name']:'';
-				let previous_job = (isDefinded(contexts[0].parameters['previous-job'])
+				let previous_job = (isDefined(contexts[0].parameters['previous-job'])
 				&& contexts[0].parameters['previous-job']!='') ? contexts[0].parameters['previous-job']:'';
-				let year_of_experience = (isDefinded(contexts[0].parameters['year-of-experience'])
+				let year_of_experience = (isDefined(contexts[0].parameters['year-of-experience'])
 				&& contexts[0].parameters['year-of-experience']!='') ? contexts[0].parameters['year-of-experience']:'';
-				let job_vacancy = (isDefinded(contexts[0].parameters['job-vacancy'])
+				let job_vacancy = (isDefined(contexts[0].parameters['job-vacancy'])
 				&& contexts[0].parameters['job-vacancy']!='') ? contexts[0].parameters['job-vacancy']:'';	
 			
 				if(phone_number !='' && user_name !='' && previous_job !='' && year_of_experience !='' && job_vacancy !='') {
