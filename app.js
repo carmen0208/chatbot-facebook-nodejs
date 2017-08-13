@@ -201,7 +201,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 
 				var request = require("request");
 				request({
-					url: 'http://samples.openweathermap.org/data/2.5/weather',
+					url: 'https://samples.openweathermap.org/data/2.5/weather',
 					qs: {
 						appid :config.WEATHER_API_KEY, 
 						q: parameters["geo-city"]
@@ -209,6 +209,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 				}, function(error, response, body) {
 					if(!error && response.statusCode == 200) {
 						let weather = JSON.parse(body);
+						console.log(JSON.stringify(weather);
 						if(weather.hasOwnProperty['weather']) {
 							let reply = `${responseText} ${weather["weather"][0]["description"]}`;
 							sendTextMessage(sender, reply);
