@@ -36,6 +36,9 @@ if (!config.SENDGRID_API_KEY) {
 	throw new Error('missing SENDGRID_API_KEY');
 }
 
+if (!config.WEATHER_API_KEY) { 
+	throw new Error('missing WEATHER_API_KEY');
+}
 
 
 app.set('port', (process.env.PORT || 5000))
@@ -193,6 +196,33 @@ function handleEcho(messageId, appId, metadata) {
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 	switch (action) {
+		case "get-current-weather":
+			if (parameters.hasOwnProperty('geo-city') && parameters["geo-city"]!= '') {
+
+				var request = require("request");
+				request({
+					url: 'http://samples.openweathermap.org/data/2.5/weather',
+					qs: {
+						appid :config.WEATHER_API_KEY, 
+						q: parameters["geo-city"]
+					},
+				}, function(error, response, body) {
+					if(!error && response.statusCode == 200) {
+						let weather = JSON.parse(body);
+						if(weather.hasOwnProperty['weather']) {
+							let reply = `${responseText} ${weather["weather"][0]["description"]}`;
+							sendTextMessage(sender, reply);
+						} else {
+							sendTextMessage(sender, `No weather forcast avaliable for ${parameters["geo-city"]}`)
+						}
+					} else {
+						console.error(response.error);
+					}
+				});
+			} else {
+				sendTextMessage(sender, responseText);
+			}
+			break;
 		case "faq-delivery":
 			sendTextMessage(sender, responseText);
 			sendTypingOn(sender);

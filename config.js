@@ -6,5 +6,6 @@ module.exports = {
     SERVER_URL: "https://ninjacaesar.herokuapp.com",
     SENDGRID_API_KEY: "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",
     EMAIL_FROM: "carmen.liujia@gmail.com",
-    EMAIL_TO: "carmen.liujia@gmail.com"
+    EMAIL_TO: "carmen.liujia@gmail.com",
+    WEATHER_API_KEY: "f8888deeabd1fbd9321a180cb7b13bb0",
 };
