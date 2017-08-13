@@ -193,6 +193,33 @@ function handleEcho(messageId, appId, metadata) {
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 	switch (action) {
+		case "faq-delivery":
+			sendTextMessage(sender, responseText);
+			sendTypingOn(sender);
+
+			//ask what user wants to do next?
+			setTimeout(function() {
+				let buttons = [
+					{
+					  "type":"web_url",
+					  "url":"https://ninja.io/track_order",
+					  "title":"Track my Order"
+					},
+					{
+					  "type":"phone_number",
+					  "title":"Call us",
+					  "payload":"+02102039284"
+					},
+					{
+					  "type":"postback",
+					  "title":"Keep on Chatting",
+					  "payload":"CHAT"
+					}
+				  ]
+				sendButtonMessage(sender, "what would you like to do next?", buttons)
+			})
+			break;
+			//is there any job openning?
 		case "job-enquiry":
 			let replies = [
 			{
@@ -774,6 +801,9 @@ function receivedPostback(event) {
 	var payload = event.postback.payload;
 
 	switch (payload) {
+		case 'CHAT':
+			sendTextMessage(senderID, "I love chatting too, Do you have any other question for me?")
+			break;
 		default:
 			//unindentified payload
 			sendTextMessage(senderID, "I'm not sure what you want. Can you be more specific?");
