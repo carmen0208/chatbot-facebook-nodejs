@@ -201,7 +201,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 
 				var request = require("request");
 				request({
-					url: 'https://samples.openweathermap.org/data/2.5/weather',
+					url: 'http://samples.openweathermap.org/data/2.5/weather',
 					qs: {
 						appid :config.WEATHER_API_KEY, 
 						q: parameters["geo-city"]
@@ -217,7 +217,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 							sendTextMessage(sender, `No weather forcast avaliable for ${parameters["geo-city"]}`)
 						}
 					} else {
-						console.error(response.error);
+						console.error(error);
 					}
 				});
 			} else {
