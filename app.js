@@ -201,6 +201,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 					"payload":"Not interest"
 				}
 			];
+			break;
 		case "detailed-application":
 			if (isDefinded(contexts[0]) && contexts[0].name == 'job_application' && context[0].parameters) {
 				let phone_number = (isDefinded(contexts[0].parameters['phone-number'])
