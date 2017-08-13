@@ -26,6 +26,15 @@ if (!config.FB_APP_SECRET) {
 if (!config.SERVER_URL) { //used for ink to static files
 	throw new Error('missing SERVER_URL');
 }
+if (!config.EMAIL_FROM) {
+	throw new Error('missing EMAIL_FROM');
+}
+if (!config.EMAIL_TO) { 
+	throw new Error('missing EMAIL_TO');
+}
+if (!config.SENDGRID_API_KEY) { 
+	throw new Error('missing SENDGRID_API_KEY');
+}
 
 
 
@@ -186,20 +195,20 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 	switch (action) {
 		case "job-enquiry":
 			let replies = [
-				{
-					"content_type":"text",
-					"title":"Accountant",
-					"payload":"Accountant"
-				},
-				{
-					"content_type":"text",
-					"title":"Sales",
-					"payload":"Sales"
-				},{
-					"content_type":"text",
-					"title":"Not interest",
-					"payload":"Not interest"
-				}
+			{
+				"content_type":"text",
+				"title":"Accountant",
+				"payload":"Accountant"
+			},
+			{
+				"content_type":"text",
+				"title":"Sales",
+				"payload":"Sales"
+			},{
+				"content_type":"text",
+				"title":"Not interest",
+				"payload":"Not interest"
+			}
 			];
 			sendQuickReply(sender, responseText, replies);
 			break;
@@ -215,6 +224,14 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 				&& contexts[0].parameters['year-of-experience']!='') ? contexts[0].parameters['year-of-experience']:'';
 				let job_vacancy = (isDefinded(contexts[0].parameters['job-vacancy'])
 				&& contexts[0].parameters['job-vacancy']!='') ? contexts[0].parameters['job-vacancy']:'';	
+			
+				if(phone_number !='' && user_name !='' && previous_job !='' && year_of_experience !='' && job_vacancy !='') {
+					let emailContent = 'A new job enquiery from ' + user_name + ' for the job: ' + job_vacancy +
+					'.<br> Previous job position: ' + previous_job + '.' +
+					'.<br> Years of experience: ' + year_of_experience + '.' +
+					'.<br> Phone number:  ' + phone_number;
+					sendEmail('New job Application', emailContent);
+				}
 			}
 			sendTextMessage(sender, responseText);
 			break;
@@ -888,6 +905,33 @@ function verifyRequestSignature(req, res, buf) {
 	}
 }
 
+
+function sendEmail(subject, content) {
+	// using SendGrid's v3 Node.js Library
+	// https://github.com/sendgrid/sendgrid-nodejs
+	var helper = require('sendgrid').mail;
+	var fromEmail = new helper.Email(config.EMAIL_FROM);
+	var toEmail = new helper.Email(config.EMAIL_TO);
+	var subject = subject;
+	var content = new helper.Content('text/html', content);
+	var mail = new helper.Mail(fromEmail, subject, toEmail, content);
+
+	var sg = require('sendgrid')(config.SENDGRID_API_KEY);
+	var request = sg.emptyRequest({
+	method: 'POST',
+	path: '/v3/mail/send',
+	body: mail.toJSON()
+	});
+
+	sg.API(request, function (error, response) {
+	if (error) {
+		console.log('Error response received');
+	}
+	console.log(response.statusCode);
+	console.log(response.body);
+	console.log(response.headers);
+	});
+}
 function isDefined(obj) {
 	if (typeof obj == 'undefined') {
 		return false;
