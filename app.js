@@ -184,6 +184,23 @@ function handleEcho(messageId, appId, metadata) {
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 	switch (action) {
+		case "job-enquiry":
+			let replies = [
+				{
+					"content_type":"text",
+					"title":"Accountant",
+					"payload":"Accountant"
+				},
+				{
+					"content_type":"text",
+					"title":"Sales",
+					"payload":"Sales"
+				},{
+					"content_type":"text",
+					"title":"Not interest",
+					"payload":"Not interest"
+				}
+			];
 		case "detailed-application":
 			if (isDefinded(contexts[0]) && contexts[0].name == 'job_application' && context[0].parameters) {
 				let phone_number = (isDefinded(contexts[0].parameters['phone-number'])
