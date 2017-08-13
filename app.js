@@ -6,10 +6,11 @@ const express = require('express');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const request = require('request');
+const pg = require('pg');
 const app = express();
 const uuid = require('uuid');
 
-
+pg.defaults.ssl = true;
 // Messenger API parameters
 if (!config.FB_PAGE_TOKEN) {
 	throw new Error('missing FB_PAGE_TOKEN');
@@ -773,6 +774,32 @@ function greetUserText(userId) {
 				sendTextMessage(userId, "Welcome " + user.first_name + '!' +
 				'I can answer frequently asked question for you ' +
 				'and I perform job interviews, what can I help you with?');
+				pg.connect(process.env.DATABASE_URL, function(err, client) {
+					if(err) throw err;
+					console.log('connect to postgres, Searching for a user...');
+					let rows = [];
+					client.query(`SELECT id FROM users WHERE fb_id = '$userId' LIMIT 1`)
+					.on('row', function(row){
+						rows.push(row);
+					})
+					.on('end', () => {
+						if(rows.length === 0) {
+							let sql = 'INSERT INTO users (fd_id, first_name, last_name, picture, locale, timezone, gender' + 
+							'VALUES ($1, $2, $3, $4, $5, $6, $7)';
+
+							client.query(sql, [
+								userId,
+								user.first_name,
+								user.last_name,
+								user.picture,
+								user.locale,
+								user.timezone
+								user.gender,
+							])
+						}
+					})
+
+				})
 			} else {
 				console.log("Cannot get data for fb user with id",
 					userId);
