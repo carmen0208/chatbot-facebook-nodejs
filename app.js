@@ -198,6 +198,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 			sendTypingOn(sender);
 
 			//ask what user wants to do next?
+			//When will my mac be delivered?
 			setTimeout(function() {
 				let buttons = [
 					{
@@ -738,7 +739,9 @@ function greetUserText(userId) {
 				console.log("FB user: %s %s, %s",
 					user.first_name, user.last_name, user.gender);
 
-				sendTextMessage(userId, "Welcome " + user.first_name + '!');
+				sendTextMessage(userId, "Welcome " + user.first_name + '!' +
+				'I can answer frequently asked question for you ' +
+				'and I perform job interviews, what can I help you with?');
 			} else {
 				console.log("Cannot get data for fb user with id",
 					userId);
@@ -801,6 +804,9 @@ function receivedPostback(event) {
 	var payload = event.postback.payload;
 
 	switch (payload) {
+		case 'GET_STARTED':
+			greetUserText(senderID);
+			break;
 		case 'CHAT':
 			sendTextMessage(senderID, "I love chatting too, Do you have any other question for me?")
 			break;
